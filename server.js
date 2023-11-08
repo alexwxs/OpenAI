@@ -7,8 +7,8 @@ const axios = require('axios');
 const app = express();
 const port = 1339;
 const openAIConfig = {
-    organization: "org-jhJjg4qxgeGnbpDbj7jEgRYy",
-    apiKey: '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',
+    organization: 'org-XPt4NWJfMGbWuUcJpa3XybdO',
+    apiKey: process.env.OPENAI_API_KEY,
 };
 
 const openai = new OpenAI({ apiKey: openAIConfig.apiKey });
@@ -37,7 +37,11 @@ app.post('/doSomeTest', async (req, res) => {
             model: "gpt-3.5-turbo",
         });
 
-        res.status(200).json({ openAIResponse: completion.choices[0].text });
+        const completionContent = completion.choices[0].message.content; // Extract completion content
+        if (completionContent) {
+            console.log('Completion Content Received'); // Log the completion content
+        }
+        res.status(200).json({ completionContent }); // Send the completion content in the response
     } catch (error) {
         console.error('Error during test:', error.message);
         res.status(500).json({ error: error.message });

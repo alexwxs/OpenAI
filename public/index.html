@@ -6,10 +6,9 @@
     <title>Test OpenAI API</title>
 </head>
 <body>
-    <button onclick="doSomeTest()">Do Some Test</button>
-    <p></p>
-    <div id='testResult'>
-    </div>
+    <textarea id="promptInput" placeholder="Enter your prompt text" rows="10" cols="50"></textarea>
+    <button onclick="doSomeTest()">Generate Completion</button>
+    <div id="testResult"></div>
     <script src="script.js"></script>
 </body>
 </html>

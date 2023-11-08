@@ -4,27 +4,26 @@ function doSomeTest() {
     var testResult = document.getElementById('testResult');
     testResult.innerHTML = 'Please wait ...';
 
-    // Prompt to be sent in the request body
-    var promptText = "Write a short story about a detective investigating a mysterious disappearance.";
+    var promptInput = document.getElementById('promptInput').value; // Get the user-entered prompt text
 
-    // Prepare the request body containing the prompt
-    var requestBody = { prompt: promptText };
+    // Prepare the request body containing the user's entered prompt
+    var requestBody = { prompt: promptInput };
 
-    xhr.setRequestHeader('Content-Type', 'application/json'); // Set the Content-Type header
+    xhr.setRequestHeader('Content-Type', 'application/json');
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 try {
                     var response = JSON.parse(xhr.responseText);
-                    testResult.innerHTML = response.message || 'Success'; // Display success message or default
+                    testResult.innerHTML = response.completionContent || 'Success'; // Display completion content or default
                 } catch (error) {
                     testResult.innerHTML = 'Error in parsing server response';
                 }
             } else {
                 try {
                     var response = JSON.parse(xhr.responseText);
-                    testResult.innerHTML = 'Error: ' + (response.error || 'Unknown Error'); // Display error message or default
+                    testResult.innerHTML = 'Error: ' + (response.error || 'Unknown Error');
                 } catch (error) {
                     testResult.innerHTML = 'Error in parsing server error response';
                 }
@@ -32,6 +31,5 @@ function doSomeTest() {
         }
     };
 
-    // Convert the JavaScript object to a JSON string and send it as the request body
     xhr.send(JSON.stringify(requestBody));
 }
