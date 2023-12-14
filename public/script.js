@@ -1,35 +1,56 @@
-// ...
+// script.js
 
-var conversationContext = []; // Array to store conversation messages
+const conversationContext = [];
+const maxConversationMessages = 50;
 
-function doSomeTest() {
-    var testResult = document.getElementById('testResult');
-    var promptInput = document.getElementById('promptInput').value.trim();
+function generateCompletion() {
+    const completionContentContainer = document.getElementById('completionContent');
+    const userPromptInput = document.getElementById('userPromptInput').value.trim();
+    const conversationContainer = document.getElementById('conversation');
 
-    if (!promptInput) {
-        testResult.innerHTML = 'Please enter a prompt';
+    if (!userPromptInput) {
+        completionContentContainer.innerHTML = 'Please enter a prompt';
         return;
     }
 
-    testResult.innerHTML = 'Please wait ...';
+    completionContentContainer.innerHTML = 'Please wait ...';
 
     // Add the user's message to the conversation context
-    conversationContext.push({ role: 'user', content: promptInput });
+    conversationContext.push({ role: 'user', content: userPromptInput });
 
-    var requestBody = { messages: conversationContext };
+    // Trim or omit messages if the conversation exceeds the maximum number of messages
+    if (conversationContext.length > maxConversationMessages) {
+        conversationContext.shift(); // Remove the oldest message
+    }
 
-    axios.post('/doSomeTest', requestBody)
+    const requestBody = { messages: conversationContext };
+
+    axios.post('/generateCompletion', requestBody)
         .then(function (response) {
             // Handle success
-            var completionContent = response.data.completionContent;
-            testResult.innerHTML = completionContent || 'Success';
+            const completionContent = response.data.completionContent;
+            completionContentContainer.innerHTML = completionContent || 'Success';
 
             // Add the AI's response to the conversation context
             conversationContext.push({ role: 'assistant', content: completionContent });
+
+            // Update the conversation history in the UI
+            updateConversationUI(conversationContainer, conversationContext);
         })
         .catch(function (error) {
             // Handle error
-            console.error('Error during test:', error.message);
-            testResult.innerHTML = 'Error: ' + (error.response.data.error || 'Unknown Error');
+            console.error('Error during completion generation:', error.message);
+            completionContentContainer.innerHTML = 'Error: ' + (error.response.data.error || 'Unknown Error');
         });
+}
+
+function updateConversationUI(container, conversation) {
+    container.innerHTML = '';
+
+    conversation.forEach(function (message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = message.role === 'user' ? 'user-message' : 'assistant-message';
+        messageDiv.textContent = message.content;
+        container.appendChild(messageDiv);
+    });
 }

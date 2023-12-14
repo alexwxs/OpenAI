@@ -1,15 +1,66 @@
-<!DOCTYPE html>
+<!-- index.html -->
 
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
-    <title>Test OpenAI API</title>
+    <title>OpenAI Chatbot</title>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #left-panel {
+            flex: 1;
+            padding: 10px;
+        }
+
+        #right-panel {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            border-left: 1px solid #ccc;
+        }
+
+        #conversation {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .user-message {
+            color: blue;
+        }
+
+        .assistant-message {
+            color: green;
+        }
+
+        #userPromptInput {
+            width: 100%;
+            height: 50%;
+        }
+
+        #completionContent {
+            margin-top: 10px;
+            color: green;
+        }
+    </style>
 </head>
 <body>
-    <textarea id="promptInput" placeholder="Enter your prompt text" rows="10" cols="50"></textarea>
-    <button onclick="doSomeTest()">Generate Completion</button>
-    <div id="testResult"></div>
-    <script src="script.js"></script>
+    <div id="left-panel">
+        <textarea id="userPromptInput" placeholder="Enter your prompt text" rows="3" cols="30"></textarea>
+        <button onclick="generateCompletion()">Generate Completion</button>
+        <div id="completionContent"></div>
+    </div>
+    <div id="right-panel">
+        <div id="conversation"></div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

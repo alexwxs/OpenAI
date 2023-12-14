@@ -1,11 +1,12 @@
 'use strict';
-const {OpenAI} = require('openai');
+
+const { OpenAI } = require('openai');
 const express = require('express');
 const path = require('path');
-const bodyParser = require('body-parser'); // Import body-parser
-const axios = require('axios');
+const bodyParser = require('body-parser');
 const app = express();
 const port = 1339;
+
 const openAIConfig = {
     organization: 'org-XPt4NWJfMGbWuUcJpa3XybdO',
     apiKey: process.env.OPENAI_API_KEY,
@@ -13,7 +14,6 @@ const openAIConfig = {
 
 const openai = new OpenAI({ apiKey: openAIConfig.apiKey });
 
-// Body-parser middleware to handle JSON data
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.post('/doSomeTest', async (req, res) => {
+app.post('/generateCompletion', async (req, res) => {
     console.log('Request Received: ' + req.url);
     try {
         const requestData = req.body;
@@ -41,7 +41,7 @@ app.post('/doSomeTest', async (req, res) => {
         }
         res.status(200).json({ completionContent });
     } catch (error) {
-        console.error('Error during test:', error.message);
+        console.error('Error during completion generation:', error.message);
         res.status(500).json({ error: error.message });
     }
 });
