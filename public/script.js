@@ -1,35 +1,35 @@
+// ...
+
+var conversationContext = []; // Array to store conversation messages
+
 function doSomeTest() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/doSomeTest', true);
     var testResult = document.getElementById('testResult');
+    var promptInput = document.getElementById('promptInput').value.trim();
+
+    if (!promptInput) {
+        testResult.innerHTML = 'Please enter a prompt';
+        return;
+    }
+
     testResult.innerHTML = 'Please wait ...';
 
-    var promptInput = document.getElementById('promptInput').value; // Get the user-entered prompt text
+    // Add the user's message to the conversation context
+    conversationContext.push({ role: 'user', content: promptInput });
 
-    // Prepare the request body containing the user's entered prompt
-    var requestBody = { prompt: promptInput };
+    var requestBody = { messages: conversationContext };
 
-    xhr.setRequestHeader('Content-Type', 'application/json');
+    axios.post('/doSomeTest', requestBody)
+        .then(function (response) {
+            // Handle success
+            var completionContent = response.data.completionContent;
+            testResult.innerHTML = completionContent || 'Success';
 
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                try {
-                    var response = JSON.parse(xhr.responseText);
-                    testResult.innerHTML = response.completionContent || 'Success'; // Display completion content or default
-                } catch (error) {
-                    testResult.innerHTML = 'Error in parsing server response';
-                }
-            } else {
-                try {
-                    var response = JSON.parse(xhr.responseText);
-                    testResult.innerHTML = 'Error: ' + (response.error || 'Unknown Error');
-                } catch (error) {
-                    testResult.innerHTML = 'Error in parsing server error response';
-                }
-            }
-        }
-    };
-
-    xhr.send(JSON.stringify(requestBody));
+            // Add the AI's response to the conversation context
+            conversationContext.push({ role: 'assistant', content: completionContent });
+        })
+        .catch(function (error) {
+            // Handle error
+            console.error('Error during test:', error.message);
+            testResult.innerHTML = 'Error: ' + (error.response.data.error || 'Unknown Error');
+        });
 }

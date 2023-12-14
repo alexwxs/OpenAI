@@ -26,22 +26,20 @@ app.post('/doSomeTest', async (req, res) => {
     try {
         const requestData = req.body;
 
-        if (!requestData || !requestData.prompt) {
-            throw new Error('Invalid or missing prompt');
+        if (!requestData || !requestData.messages || requestData.messages.length === 0) {
+            throw new Error('Invalid or missing conversation context');
         }
 
-        const prompt = requestData.prompt;
-
         const completion = await openai.chat.completions.create({
-            messages: [{ role: "system", content: `${prompt}` }],
+            messages: requestData.messages,
             model: "gpt-3.5-turbo",
         });
 
-        const completionContent = completion.choices[0].message.content; // Extract completion content
+        const completionContent = completion.choices[0].message.content;
         if (completionContent) {
-            console.log('Completion Content Received'); // Log the completion content
+            console.log('Completion Content Received');
         }
-        res.status(200).json({ completionContent }); // Send the completion content in the response
+        res.status(200).json({ completionContent });
     } catch (error) {
         console.error('Error during test:', error.message);
         res.status(500).json({ error: error.message });
