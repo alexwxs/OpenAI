@@ -15,20 +15,22 @@ function generateCompletion() {
 
     completionContentContainer.innerHTML = 'Please wait ...';
 
-    // Add the user's message to the conversation context
-    conversationContext.push({ role: 'user', content: userPromptInput });
+    // Update: Pass only the last message to the server
+    const lastUserMessage = { role: 'user', content: userPromptInput };
+    conversationContext.push(lastUserMessage);
 
     // Trim or omit messages if the conversation exceeds the maximum number of messages
     if (conversationContext.length > maxConversationMessages) {
         conversationContext.shift(); // Remove the oldest message
     }
 
-    const requestBody = { messages: conversationContext };
+    // Update: Send only the last message to the server
+    const requestBody = { lastMessage: lastUserMessage };
 
     axios.post('/generateCompletion', requestBody)
         .then(function (response) {
             // Handle success
-            const completionContent = response.data.completionContent;
+            const completionContent = response.data.content;
             completionContentContainer.innerHTML = completionContent || 'Success';
 
             // Add the AI's response to the conversation context
@@ -44,6 +46,7 @@ function generateCompletion() {
         });
 }
 
+
 function updateConversationUI(container, conversation) {
     container.innerHTML = '';
 
@@ -54,3 +57,9 @@ function updateConversationUI(container, conversation) {
         container.appendChild(messageDiv);
     });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    axios.get('/onPageLoadAction')
+        .then(response => console.log('Action on page load successful:', response.data))
+        .catch(error => console.error('Error during page load action:', error.message));
+});
