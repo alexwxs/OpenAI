@@ -5,6 +5,7 @@ const maxConversationMessages = 50;
 let selectedFileRow = null;
 let selectedFileId = null;
 let selectedFileName = null;
+let file_ids = [];
 const deleteFileBtn = document.getElementById('deleteFileBtn');
 
 function generateCompletion() {
@@ -20,7 +21,7 @@ function generateCompletion() {
     completionContentContainer.innerHTML = 'Please wait ...';
 
     // Update: Pass only the last message to the server
-    const lastUserMessage = { role: 'user', content: userPromptInput };
+    const lastUserMessage = { role: 'user', content: userPromptInput, file_ids: file_ids };
     conversationContext.push(lastUserMessage);
 
     // Trim or omit messages if the conversation exceeds the maximum number of messages
@@ -207,6 +208,41 @@ function fileListCallBack(row, item) {
         row.classList.add('selected');
         selectedFileRow = row;
     });
+    // Double-click event
+    row.addEventListener('dblclick', (event) => {
+        event.preventDefault();
+
+        const balloonText = file_ids.includes(item.id)
+            ? `${item.filename} is already added to the conversation.`
+            : `${item.filename} is added to the conversation.`;
+
+        const balloon = createBalloon(balloonText);
+        positionBalloon(balloon, row);
+        document.body.appendChild(balloon);
+
+        setTimeout(() => {
+            balloon.remove();
+        }, 3000);
+
+        if (!file_ids.includes(item.id)) {
+            file_ids.push(item.id);
+        }
+    });
+}
+
+// Helper function to create a balloon element
+function createBalloon(text) {
+    const balloon = document.createElement('div');
+    balloon.className = 'balloon';
+    balloon.textContent = text;
+    return balloon;
+}
+
+// Helper function to position the balloon near the row
+function positionBalloon(balloon, row) {
+    const rect = row.getBoundingClientRect();
+    balloon.style.top = `${rect.top + window.scrollY}px`;
+    balloon.style.left = `${rect.right + window.scrollX}px`;
 }
 
 function enableUploadButton() {

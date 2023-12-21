@@ -66,7 +66,6 @@ app.post('/generateCompletion', async (req, res) => {
         if (!lastUserMessage || !lastUserMessage.content) {
             throw new Error('Invalid or missing user prompt');
         }
-
         await openai.beta.threads.messages.create(thread.id, lastUserMessage);
 
         let run = await openai.beta.threads.runs.create(
