@@ -36,6 +36,7 @@
     <Content Include="public\script.js">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="public\styles.css" />
     <Content Include="server.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />

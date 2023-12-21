@@ -1,0 +1,143 @@
+/* styles.css */
+
+/* Body styles */
+body {
+    padding-top: 20px;
+}
+
+/* Left panel styles */
+#left-panel {
+    flex: 1;
+    padding: 10px;
+    display: flex;
+    flex-direction: column; /* Ensure a vertical column layout */
+}
+
+#userPromptInput {
+    width: 100%;
+    margin-bottom: 10px; /* Add some bottom margin for spacing */
+}
+
+#uploadForm {
+    margin-bottom: 20px;
+}
+
+/* Right panel styles */
+#right-panel {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-left: 1px solid #ccc;
+    overflow: auto; /* Allow for vertical scrolling if needed */
+}
+
+#conversation {
+    flex: 1;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+/* Navbar styles */
+.navbar {
+    background-color: #ffffff;
+    transition: background-color 0.3s ease;
+}
+
+    .navbar:hover {
+        background-color: #f8f9fa;
+    }
+
+.navbar-nav .nav-item .nav-link {
+    color: #007bff;
+    transition: color 0.3s ease;
+}
+
+    .navbar-nav .nav-item .nav-link:hover {
+        color: #0056b3;
+    }
+
+/* Margin and padding styles */
+.margin-bottom-20 {
+    margin-bottom: 20px;
+}
+
+    .margin-bottom-20 button {
+        margin-bottom: 20px;
+    }
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Table styles */
+.bordered-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+    .bordered-table th,
+    .bordered-table td {
+        border: 1px solid black;
+        padding: 8px;
+    }
+
+    .bordered-table th {
+        text-align: left;
+    }
+
+.purple-cell {
+    background-color: purple;
+}
+
+/* Paragraph styles */
+p {
+    margin-bottom: 20px;
+}
+
+/* Generic table styles */
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+}
+
+tr:hover {
+    background-color: #f0f0f0;
+}
+
+tr.selected {
+    background-color: yellow !important;
+}
+
+/* Row styles */
+.row {
+    display: flex;
+    flex-direction: row;
+    border: 1px solid #ccc;
+    margin: 5px;
+    padding: 5px;
+    width: calc(100% - 12px);
+}
+
+    .row > div {
+        flex: 1;
+        padding: 5px;
+        margin: 5px;
+    }
+
+    .row:hover {
+        background-color: #f0f0f0;
+    }
+
+    .row.default {
+        background-color: white !important;
+    }
+
+    .row.selected {
+        background-color: yellow !important;
+    }
