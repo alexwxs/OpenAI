@@ -52,36 +52,69 @@ function generateCompletion() {
 }
 
 
-function updateConversationUIbak(container, conversation) {
-    container.innerHTML = '';
-
-    conversation.forEach(function (message) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = message.role === 'user' ? 'user-message' : 'assistant-message';
-        messageDiv.textContent = message.content;
-        container.appendChild(messageDiv);
-    });
-}
-
 function updateConversationUI(container, conversation) {
     container.innerHTML = '';
 
     conversation.forEach(function (message) {
-        const cardDiv = document.createElement('div');
-        cardDiv.className = message.role === 'user' ? 'card bg-light mb-3' : 'card bg-secondary-light mb-3';
-
-        const cardBody = document.createElement('div');
-        cardBody.className = 'card-body';
-
-        const cardText = document.createElement('p');
-        cardText.className = message.role === 'user' ? 'card-text text-primary' : 'card-text text-secondary';
-        cardText.textContent = message.content;
-
-        cardBody.appendChild(cardText);
-        cardDiv.appendChild(cardBody);
-        container.appendChild(cardDiv);
+        if (message.role === 'user') {
+            updateConversationUser(container, message);
+        } else if (message.role === 'assistant') {
+            updateConversationAssistant(container, message);
+        }
     });
+
+    addPromptInputAndButton(container);
 }
+
+function addPromptInputAndButton(container) {
+    // Add userPromptInput
+    const userInputTextarea = document.createElement('textarea');
+    userInputTextarea.id = 'userPromptInput';
+    userInputTextarea.placeholder = 'Enter your prompt text';
+    userInputTextarea.rows = 3;
+    userInputTextarea.className = 'form-control mb-3'; // Set the value if needed
+    container.appendChild(userInputTextarea);
+
+    // Add Ask OpenAI Assistant button
+    const askButton = document.createElement('button');
+    askButton.onclick = generateCompletion;
+    askButton.className = 'btn btn-success mt-3';
+    askButton.textContent = 'Ask OpenAI Assistant';
+    container.appendChild(askButton);
+}
+
+function updateConversationUser(container, message) {
+    const cardDiv = document.createElement('div');
+    cardDiv.className = 'card bg-light mb-3';
+
+    const cardBody = document.createElement('div');
+    cardBody.className = 'card-body';
+
+    const cardText = document.createElement('p');
+    cardText.className = 'card-text text-primary';
+    cardText.textContent = message.content;
+
+    cardBody.appendChild(cardText);
+    cardDiv.appendChild(cardBody);
+    container.appendChild(cardDiv);
+}
+
+function updateConversationAssistant(container, message) {
+    const cardDiv = document.createElement('div');
+    cardDiv.className = 'card bg-secondary-light mb-3';
+
+    const cardBody = document.createElement('div');
+    cardBody.className = 'card-body';
+
+    const cardText = document.createElement('p');
+    cardText.className = 'card-text text-secondary';
+    cardText.textContent = message.content;
+
+    cardBody.appendChild(cardText);
+    cardDiv.appendChild(cardBody);
+    container.appendChild(cardDiv);
+}
+
 
 document.addEventListener("DOMContentLoaded", () => {
     axios.get('/onPageLoadAction')
