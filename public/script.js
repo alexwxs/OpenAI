@@ -7,6 +7,7 @@ let selectedFileId = null;
 let selectedFileName = null;
 let file_ids = [];
 const deleteFileBtn = document.getElementById('deleteFileBtn');
+let generateCompletionBtn = document.getElementById('generateCompletionBtn');
 
 function generateCompletion() {
     const completionContentContainer = document.getElementById('completionContent');
@@ -19,7 +20,7 @@ function generateCompletion() {
     }
 
     completionContentContainer.innerHTML = 'Please wait ...';
-
+    generateCompletionBtn.textContent = 'Please wait ...';
     // Update: Pass only the last message to the server
     const lastUserMessage = { role: 'user', content: userPromptInput, file_ids: file_ids };
     conversationContext.push(lastUserMessage);
@@ -48,6 +49,7 @@ function generateCompletion() {
             // Handle error
             console.error('Error during completion generation:', error.message);
             completionContentContainer.innerHTML = 'Error: ' + (error.response.data.error || 'Unknown Error');
+            generateCompletionBtn.textContent = 'Error occured, please retry ...';
         });
 }
 
@@ -81,6 +83,7 @@ function addPromptInputAndButton(container) {
     askButton.className = 'btn btn-success mt-3';
     askButton.textContent = 'Ask OpenAI Assistant';
     container.appendChild(askButton);
+    generateCompletionBtn = askButton;
 }
 
 function updateConversationUser(container, message) {
@@ -106,15 +109,32 @@ function updateConversationAssistant(container, message) {
     const cardBody = document.createElement('div');
     cardBody.className = 'card-body';
 
-    const cardText = document.createElement('p');
-    cardText.className = 'card-text text-secondary';
-    cardText.textContent = message.content;
+    // Split the message content by consecutive backticks
+    const contentParts = message.content.split('```');
 
-    cardBody.appendChild(cardText);
+    // Iterate through the content parts and create cards
+    contentParts.forEach((part, index) => {
+        if (index % 2 === 0) {
+            // Even index parts are outside backticks and should be added as text content
+            const cardText = document.createElement('p');
+            cardText.className = 'card-text text-secondary';
+            // Replace spaces with non-breaking spaces
+            cardText.innerHTML = part.replace(/ /g, '&nbsp;');
+            cardBody.appendChild(cardText);
+        } else {
+            // Odd index parts are inside backticks and should be added as code content
+            const codeElement = document.createElement('code');
+            // Replace spaces with non-breaking spaces within code
+            codeElement.innerHTML = part.replace(/ /g, '&nbsp;');
+            // Replace '\n' with '<br>' for line breaks within code
+            codeElement.innerHTML = codeElement.innerHTML.replace(/\n/g, '<br>');
+            cardBody.appendChild(codeElement);
+        }
+    });
+
     cardDiv.appendChild(cardBody);
     container.appendChild(cardDiv);
 }
-
 
 document.addEventListener("DOMContentLoaded", () => {
     axios.get('/onPageLoadAction')
