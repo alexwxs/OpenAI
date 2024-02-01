@@ -20,6 +20,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 let thread = null;
+let assistant = null;
 
 const openAIConfig = {
     organization: 'org-XPt4NWJfMGbWuUcJpa3XybdO',
@@ -38,29 +39,56 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/onPageLoadAction', async (req, res) => {
-    try {
-        const newThread = await openai.beta.threads.create();
-        thread = newThread;
-        console.log('Thread created successfully. Thread ID:', newThread.id);
-        res.status(200).json({ message: 'Thread created successfully', threadId: newThread.id });
-    } catch (error) {
-        console.error('Error creating thread:', error.message);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
 
-
-app.post('/generateCompletion', async (req, res) => {
-    console.log('Request Received: ' + req.url);
+async function newThreadAndAssistant() {
     try {
-        const assistant = await openai.beta.assistants.create({
+        thread = await openai.beta.threads.create();
+        console.log('Thread created successfully. Thread ID:', thread.id);
+
+        assistant = await openai.beta.assistants.create({
             name: 'Code Interpreter',
             instructions: 'You are a code interpreter',
             tools: [{ type: 'code_interpreter' }],
             model: 'gpt-3.5-turbo-1106'
         });
 
+        console.log('Assistant created successfully. Assistant ID:', assistant.id);
+    } catch (error) {
+        console.error('Error creating thread or assistant:', error);
+        // Handle the error as needed
+    }
+}
+
+app.get('/thread-and-assistant', async (req, res) => {
+    try {
+        const response = {
+            threadId: thread ? thread.id : 'null',
+            assistantId: assistant ? assistant.id : 'null'
+        };
+
+        res.json(response);
+    } catch (error) {
+        console.error('Error getting thread and assistant:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.post('/create-new-thread-and-assistant', async (req, res) => {
+    try {
+        await newThreadAndAssistant();
+        res.status(200).send('New thread and assistant created successfully');
+    } catch (error) {
+        console.error('Error creating new thread and assistant:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.post('/generateCompletion', async (req, res) => {
+    console.log('Request Received: ' + req.url);
+    try {
+        if (thread == null || assistant == null) {
+            await newThreadAndAssistant();  
+        }
         const lastUserMessage = req.body.lastMessage;
 
         if (!lastUserMessage || !lastUserMessage.content) {
@@ -84,7 +112,7 @@ app.post('/generateCompletion', async (req, res) => {
         }
 
         if (run.status !== 'completed') {
-            throw new Error('Timeout waiting for assistant response');
+            throw new Error(run.last_error.code);
         }
 
         const messages = await openai.beta.threads.messages.list(thread.id);

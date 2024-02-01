@@ -136,12 +136,6 @@ function updateConversationAssistant(container, message) {
     container.appendChild(cardDiv);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    axios.get('/onPageLoadAction')
-        .then(response => console.log('Action on page load successful:', response.data))
-        .catch(error => console.error('Error during page load action:', error.message));
-});
-
 document.getElementById('uploadForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const fileInput = document.getElementById('fileInput');
@@ -325,3 +319,30 @@ async function deleteFile() {
         // Handle error
     }
 }
+
+async function createNewThreadAndAssistant() {
+    try {
+        // Send a POST request to the server to create a new thread and assistant
+        const response = await axios.post('/create-new-thread-and-assistant');
+
+        // Update the UI with the new thread and assistant information
+        updateUI();
+    } catch (error) {
+        console.error('Error creating new thread and assistant:', error);
+    }
+}
+
+async function updateUI() {
+    try {
+        const response = await axios.get('/thread-and-assistant');
+        const { threadId, assistantId } = response.data;
+
+        // Update the thread ID and assistant ID in the UI
+        document.getElementById('threadId').textContent = threadId;
+        document.getElementById('assistantId').textContent = assistantId;
+    } catch (error) {
+        console.error('Error updating UI:', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', updateUI);

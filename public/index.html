@@ -9,13 +9,18 @@
 
     <!-- Your custom CSS -->
     <link rel="stylesheet" href="styles.css">
-
 </head>
 <body>
     <div class="container-fluid">
         <div class="row">
             <div id="left-panel" class="col-md-4 bg-light">
                 <!-- Left panel content -->
+                <div class="mb-3">
+                    <label class="form-label">Current Thread ID: <span id="threadId"></span></label>
+                    <br>
+                    <label class="form-label">Current Assistant ID: <span id="assistantId"></span></label>
+                </div>
+                <button onclick="createNewThreadAndAssistant()" class="btn btn-success mt-1">Create New Thread and Assistant</button>
                 <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data" class="mb-3">
                     <div class="mb-3">
                         <label for="fileInput" class="form-label">Upload a file to OpenAI</label>
