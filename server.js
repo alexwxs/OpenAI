@@ -23,7 +23,8 @@ let thread = null;
 let assistant = null;
 
 const openAIConfig = {
-    organization: 'org-XPt4NWJfMGbWuUcJpa3XybdO',
+    organization: 'org-5QifgQCeNJ1rxzkGYIi7UX9m',
+    project: 'proj_JBEiG5zS2aUznC2iVdc9MPI6',
     apiKey: process.env.OPENAI_API_KEY,
 };
 
@@ -49,7 +50,7 @@ async function newThreadAndAssistant() {
             name: 'Code Interpreter',
             instructions: 'You are a code interpreter',
             tools: [{ type: 'code_interpreter' }],
-            model: 'gpt-3.5-turbo-1106'
+            model: 'gpt-4o'
         });
 
         console.log('Assistant created successfully. Assistant ID:', assistant.id);

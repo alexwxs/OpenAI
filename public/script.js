@@ -22,7 +22,9 @@ function generateCompletion() {
     completionContentContainer.innerHTML = 'Please wait ...';
     generateCompletionBtn.textContent = 'Please wait ...';
     // Update: Pass only the last message to the server
-    const lastUserMessage = { role: 'user', content: userPromptInput, file_ids: file_ids };
+    // TODO  file_ids should be managed by assisstant in 2.0
+   // const lastUserMessage = { role: 'user', content: userPromptInput, file_ids: file_ids };
+    const lastUserMessage = { role: 'user', content: userPromptInput};
     conversationContext.push(lastUserMessage);
 
     // Trim or omit messages if the conversation exceeds the maximum number of messages
