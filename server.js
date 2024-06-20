@@ -21,6 +21,7 @@ const upload = multer({ storage: storage });
 
 let thread = null;
 let assistant = null;
+const API_ASSISTANT_NAME = 'API_Code_Interpreter';
 
 const openAIConfig = {
     organization: 'org-5QifgQCeNJ1rxzkGYIi7UX9m',
@@ -40,28 +41,49 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-
 async function newThreadAndAssistant() {
     try {
+        // Create the thread
         thread = await openai.beta.threads.create();
         console.log('Thread created successfully. Thread ID:', thread.id);
 
-        assistant = await openai.beta.assistants.create({
-            name: 'Code Interpreter',
-            instructions: 'You are a code interpreter',
-            tools: [{ type: 'code_interpreter' }],
-            model: 'gpt-4o'
+        // Fetch the list of assistants to check if "API_Code_Interpreter" exists
+        const myAssistants = await openai.beta.assistants.list({
+            order: "desc",
+            limit: "20",
         });
 
-        console.log('Assistant created successfully. Assistant ID:', assistant.id);
+        // Check if "API_Code_Interpreter" exists
+        const existingAssistant = myAssistants.data.find(assistant => assistant.name === API_ASSISTANT_NAME);
+
+        // Create the assistant only if "API_Code_Interpreter" does not exist
+        if (!existingAssistant) {
+            const assistant = await openai.beta.assistants.create({
+                name: API_ASSISTANT_NAME,
+                instructions: 'You are a code interpreter',
+                tools: [{ type: 'code_interpreter' }],
+                model: 'gpt-4o'
+            });
+
+            console.log('Assistant created successfully. Assistant ID:', assistant.id);
+        } else {
+            console.log(`Assistant "${API_ASSISTANT_NAME}" already exists. Assistant ID:`, existingAssistant.id);
+        }
     } catch (error) {
         console.error('Error creating thread or assistant:', error);
         // Handle the error as needed
     }
 }
 
+
+
 app.get('/thread-and-assistant', async (req, res) => {
     try {
+        const myAssistants = await openai.beta.assistants.list({
+            order: "desc",
+            limit: "20",
+        });
+        assistant = myAssistants.data.find(assistant => assistant.name === API_ASSISTANT_NAME);
         const response = {
             threadId: thread ? thread.id : 'null',
             assistantId: assistant ? assistant.id : 'null'
